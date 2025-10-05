@@ -3,9 +3,11 @@ package config
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"time"
 
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -28,7 +30,23 @@ func ConnectMongoDB(config *DatabaseConfig) (*mongo.Client, *mongo.Database, err
 	ctx, cancel := context.WithTimeout(context.Background(), config.Timeout)
 	defer cancel()
 
-	clientOptions := options.Client().ApplyURI(config.URI)
+	err := godotenv.Load()
+    if err != nil {
+        log.Fatal("Error loading .env file")
+    }
+
+	username := os.Getenv("MONGODB_USERNAME")
+	password := os.Getenv("MONGODB_PASSWORD")
+	authSource := getEnvOrDefault("MONGODB_AUTHSOURCE", "admin")
+	fmt.Println("username", username)
+	fmt.Println("password", password)
+	fmt.Println("authSource", authSource)
+
+	clientOptions := options.Client().ApplyURI(config.URI).SetAuth(options.Credential{
+		Username:   username,
+		Password:   password,
+		AuthSource: authSource,
+	})
 
 	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {

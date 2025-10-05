@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"time"
@@ -20,26 +21,25 @@ func main() {
 	userCollection := database.Collection("users")
 	userRepository := users.NewMongoDBUserRepository(userCollection)
 	userService := users.NewUserService(userRepository)
+	ctx := context.Background()
 
-	newUser := users.User{
+	newUser := users.CreateUserRequest{
 		FirstName:      "John",
 		LastName:       "Doe",
 		Email:          "john.doe@example.com",
 		Password:       "securepassword123",
 		OrganizationID: "org-123",
-		ProfilePicture: "https://example.com/profile.jpg",
-		Role:           "admin",
 	}
 
 	fmt.Println("Creating user...")
-	if err := userService.CreateUser(newUser); err != nil {
+	if err := userService.CreateUser(ctx, newUser); err != nil {
 		log.Printf("Failed to create user: %v", err)
 	} else {
 		fmt.Println("User created successfully!")
 	}
 
 	fmt.Println("\nGetting user by email...")
-	user, err := userService.GetUserByEmail("john.doe@example.com")
+	user, err := userService.GetUserByEmail(ctx, "john.doe@example.com")
 	if err != nil {
 		log.Printf("Failed to get user: %v", err)
 	} else {
@@ -51,7 +51,7 @@ func main() {
 		user.FirstName = "Jane"
 		user.UpdatedAt = time.Now()
 
-		if err := userService.UpdateUser(user.ID, *user); err != nil {
+		if err := userService.UpdateUser(ctx, user.ID, *user); err != nil {
 			log.Printf("Failed to update user: %v", err)
 		} else {
 			fmt.Println("User updated successfully!")
@@ -59,7 +59,7 @@ func main() {
 	}
 
 	fmt.Println("\nListing users...")
-	userList, err := userService.ListUsers("org-123", 10, 0)
+	userList, err := userService.ListUsers(ctx, "org-123", 10, 0)
 	if err != nil {
 		log.Printf("Failed to list users: %v", err)
 	} else {
@@ -70,7 +70,7 @@ func main() {
 	}
 
 	fmt.Println("\nCounting users...")
-	count, err := userService.CountUsers("org-123")
+	count, err := userService.CountUsers(ctx, "org-123")
 	if err != nil {
 		log.Printf("Failed to count users: %v", err)
 	} else {
@@ -78,12 +78,12 @@ func main() {
 	}
 
 	// Uncomment to test deletion
-	// if user != nil {
-	// 	fmt.Println("\nDeleting user...")
-	// 	if err := userService.DeleteUser(user.ID); err != nil {
-	// 		log.Printf("Failed to delete user: %v", err)
-	// 	} else {
-	// 		fmt.Println("User deleted successfully!")
-	// 	}
-	// }
+	if user != nil {
+		fmt.Println("\nDeleting user...")
+		if err := userService.DeleteUser(ctx, user.ID); err != nil {
+			log.Printf("Failed to delete user: %v", err)
+		} else {
+			fmt.Println("User deleted successfully!")
+		}
+	}
 }

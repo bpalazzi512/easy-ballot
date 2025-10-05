@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/bpalazzi512/easy-ballot/backend/types"
 	"github.com/bpalazzi512/easy-ballot/backend/services/users"
+	"github.com/bpalazzi512/easy-ballot/backend/types"
 	"github.com/gorilla/mux"
 )
 
@@ -23,13 +23,13 @@ func NewHandler(userService *users.UserService) *Handler {
 func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	var user users.User
+	var user users.CreateUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		http.Error(w, "Invalid JSON", http.StatusBadRequest)
 		return
 	}
 
-	if err := h.userService.CreateUser(user); err != nil {
+	if err := h.userService.CreateUser(r.Context(), user); err != nil {
 		response := types.APIResponse{
 			Success: false,
 			Message: err.Error(),
@@ -54,7 +54,7 @@ func (h *Handler) GetUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	userID := vars["id"]
 
-	user, err := h.userService.GetUserByID(userID)
+	user, err := h.userService.GetUserByID(r.Context(), userID)
 	if err != nil {
 		response := types.APIResponse{
 			Success: false,
@@ -84,7 +84,7 @@ func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.userService.UpdateUser(userID, user); err != nil {
+	if err := h.userService.UpdateUser(r.Context(), userID, user); err != nil {
 		response := types.APIResponse{
 			Success: false,
 			Message: err.Error(),
@@ -107,7 +107,7 @@ func (h *Handler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	userID := vars["id"]
 
-	if err := h.userService.DeleteUser(userID); err != nil {
+	if err := h.userService.DeleteUser(r.Context(), userID); err != nil {
 		response := types.APIResponse{
 			Success: false,
 			Message: err.Error(),
@@ -144,7 +144,7 @@ func (h *Handler) ListUsers(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	userList, err := h.userService.ListUsers(organizationID, limit, offset)
+	userList, err := h.userService.ListUsers(r.Context(), organizationID, limit, offset)
 	if err != nil {
 		response := types.APIResponse{
 			Success: false,

@@ -21,8 +21,8 @@ func NewMongoDBUserRepository(collection *mongo.Collection) *MongoDBUserReposito
 	}
 }
 
-func (r *MongoDBUserRepository) CreateUser(user User) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+func (r *MongoDBUserRepository) CreateUser(ctx context.Context, user User) error {
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
 	now := time.Now()
@@ -41,8 +41,8 @@ func (r *MongoDBUserRepository) CreateUser(user User) error {
 	return nil
 }
 
-func (r *MongoDBUserRepository) GetUserByID(id string) (*User, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+func (r *MongoDBUserRepository) GetUserByID(ctx context.Context, id string) (*User, error) {
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
 	var user User
@@ -59,8 +59,8 @@ func (r *MongoDBUserRepository) GetUserByID(id string) (*User, error) {
 	return &user, nil
 }
 
-func (r *MongoDBUserRepository) GetUserByEmail(email string) (*User, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+func (r *MongoDBUserRepository) GetUserByEmail(ctx context.Context, email string) (*User, error) {
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
 	var user User
@@ -77,8 +77,8 @@ func (r *MongoDBUserRepository) GetUserByEmail(email string) (*User, error) {
 	return &user, nil
 }
 
-func (r *MongoDBUserRepository) UpdateUser(id string, user User) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+func (r *MongoDBUserRepository) UpdateUser(ctx context.Context, id string, user User) error {
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
 	user.UpdatedAt = time.Now()
@@ -99,11 +99,11 @@ func (r *MongoDBUserRepository) UpdateUser(id string, user User) error {
 	return nil
 }
 
-func (r *MongoDBUserRepository) DeleteUser(id string) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+func (r *MongoDBUserRepository) DeleteUser(ctx context.Context, id string) error {
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
-	filter := bson.M{"id": id}
+	filter := bson.M{"_id": id}
 
 	result, err := r.collection.DeleteOne(ctx, filter)
 	if err != nil {
@@ -117,8 +117,8 @@ func (r *MongoDBUserRepository) DeleteUser(id string) error {
 	return nil
 }
 
-func (r *MongoDBUserRepository) ListUsers(organizationID string, limit, offset int) ([]User, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+func (r *MongoDBUserRepository) ListUsers(ctx context.Context, organizationID string, limit, offset int) ([]User, error) {
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
 	filter := bson.M{}
@@ -145,8 +145,8 @@ func (r *MongoDBUserRepository) ListUsers(organizationID string, limit, offset i
 	return users, nil
 }
 
-func (r *MongoDBUserRepository) CountUsers(organizationID string) (int64, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+func (r *MongoDBUserRepository) CountUsers(ctx context.Context, organizationID string) (int64, error) {
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
 	filter := bson.M{}
