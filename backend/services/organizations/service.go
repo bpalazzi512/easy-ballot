@@ -5,7 +5,15 @@ import (
 	"fmt"
 	"strings"
 	"time"
+
+	"github.com/bpalazzi512/easy-ballot/backend/types"
 )
+
+type OrganizationRepository = types.OrganizationRepository
+
+type Organization = types.Organization
+
+type CreateOrganizationRequest = types.CreateOrganizationRequest
 
 type OrganizationService struct {
 	repository OrganizationRepository

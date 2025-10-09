@@ -5,7 +5,11 @@ import (
 	"fmt"
 	"strings"
 	"time"
+
+	"github.com/bpalazzi512/easy-ballot/backend/types"
 )
+
+type UserRepository = types.UserRepository
 
 type UserService struct {
 	repository UserRepository

@@ -9,7 +9,12 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"github.com/bpalazzi512/easy-ballot/backend/types"
 )
+
+type User = types.User
+
+type CreateUserRequest = types.CreateUserRequest
 
 type MongoDBUserRepository struct {
 	collection *mongo.Collection
