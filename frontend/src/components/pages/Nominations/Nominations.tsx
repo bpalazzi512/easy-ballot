@@ -97,7 +97,7 @@ export function Nominations() {
       ];
     const [nominations, setNominations] = useState<Nomination[]>(testNominations);
     return (
-        <div>
+        <div className="flex flex-col gap-8 p-2">
             <h1>Nominations</h1>
             {nominations.map((nomination) => (
                 <NomineeCard key={nomination.id} {...nomination} onClickUpvote={() => {}} />
